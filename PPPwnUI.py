@@ -64,6 +64,31 @@ class App:
         self.start_button = tk.Button(master, text="Start PPPwn", command=self.start_pppwn)
         self.start_button.pack(side=tk.BOTTOM, pady=10)
 
+    # Vérifier et effectuer la mise à jour
+        self.check_and_update()
+
+    def check_and_update(self):
+        try:
+            # Obtenir le contenu du dossier payload/1100 sur GitHub
+            url = "https://api.github.com/repos/THZoria/PPPwnUI/contents/contents/payload/1100"
+            response = requests.get(url)
+            response.raise_for_status()  # Génère une exception pour les codes d'erreur HTTP
+            files = response.json()
+
+            # Télécharger et écrire les fichiers localement
+            for file_info in files:
+                file_name = file_info['name']
+                download_url = file_info['download_url']
+                local_path = os.path.join("stage1" if "stage1" in file_name else "stage2", file_name)
+                with open(local_path, 'wb') as f:
+                    f.write(requests.get(download_url).content)
+
+            # Afficher une popup pour indiquer que la mise à jour est terminée
+            messagebox.showinfo("Update", "Update completed successfully.")
+
+        except Exception as e:
+            messagebox.showerror("Error", f"Failed to update: {e}")
+
     def start_pppwn(self):
         interface = self.interface_var.get()
         firmware = self.firmware_var.get()
