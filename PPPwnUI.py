@@ -75,11 +75,16 @@ class App:
             response.raise_for_status()  # Génère une exception pour les codes d'erreur HTTP
             files = response.json()
 
-            # Télécharger et écrire les fichiers localement
+             # Télécharger et écrire les fichiers localement
             for file_info in files:
                 file_name = file_info['name']
                 download_url = file_info['download_url']
-                local_path = os.path.join("stage1" if "stage1" in file_name else "stage2", file_name)
+                if "stage1" in file_name:
+                    local_path = os.path.join("stage1", "1100", file_name)
+                elif "stage2" in file_name:
+                    local_path = os.path.join("stage2", "1100", file_name)
+                else:
+                    continue  # Ignorer les autres fichiers
                 with open(local_path, 'wb') as f:
                     f.write(requests.get(download_url).content)
 
